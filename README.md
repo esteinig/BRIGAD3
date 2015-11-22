@@ -7,13 +7,111 @@ BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biome
 * Python 3.4
 * BioPython
 
+###Tutorial
+---
+
+#####1. Setup Data
+
+For demonstration, we will construct a genome comparison of two Indian sequence types (STs) of methicillin-resistant Staphylococcus aureus (MRSA): ST672 and ST772, including the reference genome DAR4145 of ST772. The rings will be constructed from three different kinds of data: the annotation and sequence files of the reference genome (dar4145.gbk, dar4145.fasta), the sequence files for genomes of ST672 and ST772 (gr1.fasta, 07-17048.fasta, kty21.fasta, 333.fasta, 3957.fasta) and the coverage matrix along a 1kb sliding window from a large alignment of genomes of ST772 against DAR4145 from SPANDx ('bedcov.txt'). You can find the files in the tutorial directory.
+
+#####2. Rings
+
+Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations, in this case mobile genetic elements (integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers of popups (values) for each in the final visualization.
+
+```
+# Generate annotation rings for CDS and MGEs
+# Import brigD3
+
+from brigD3 import *
+
+# Initialize annotation ring and set basic attributes
+cds_ring = AnnotationRing()
+cds_ring.setOptions(name='DAR4145', color='black')
+misc_ring = AnnotationRing()
+misc_ring.setOptions(name='DAR4145', color='#0C090A')
+
+# Set feature and qualifiers to be extracted
+cds_ring.feature = 'CDS'
+cds_ring.extract = {'gene': 'Gene:', 'product' : 'Product:')
+misc_ring.feature = 'misc_feature'
+misc_ring.extract = {'note': 'MGE:'}
+
+# Parse annotation files
+cds_ring.readGenbank(file='dar4145.gbk')
+misc_ring.readGenbank(file='dar4145.gbk')
+```
+
+Let's make another type of ring that will show the coverage of an alignment of genomes against DAR4145 from SPANDx. The matrix has three initial columns (Segment ID, Start, End) and coverage for each 1kb window in the range of 0 - 1 for each of the aligned genomes (... G1, G2, G3 ...). We will show the mean coverage for each window across the aligned genomes, which can help to distinguish regions with low coverage and relate them to the annotation and sequence comparisons.
+
+One trick we can use to show only the relevant regions is to set color of the ring to the background (white) and set a threshold value and color. Here, we will color only the segments with average coverage < 95%.
+
+```
+#Initialize coverage ring and set basic options
+cov_ring = CoverageRing()
+cov_ring.setOptions(name='ST772 Alignment', color='white')
+
+# Set up threshold and threshold color
+cov_ring.threshold = 0.95
+cov_ring.below = 'red'
+
+# Read average coverage per segment from SPANDx
+cov_ring.readCoverage(file='bedcov.txt', mean=True)
+```
+
+The final rings we make are the BLASTn comparisons of five genomes (1x ST673, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100bp and with BLAST identity > 70%. We must first setup some basic parameters (names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons loop over the ring generation for Blast Rings:
+
+```
+# Setup files, names and colors for BLAST 
+reference = 'dar4145.fasta'
+genomes = ['gr1.fasta', '07-17048.fasta', 'kty21.fasta', '333.fasta', '3957.fasta']
+names = ['ST672 GR1', 'ST772 07-17048', 'ST772 KTY-21', 'ST772 333', 'ST772 3957']
+colors = ['#FBB917','#0000A0', '#2B60DE', '#1589FF', '#5CB3FF']
+
+# Initialize Blaster, set to nucleotide DB and run BLASTn
+blaster = Blaster(reference, genomes)
+blaster.name_db = 'ST772-DAR4145'
+blaster.type = 'nucl'
+blaster.mode = 'blastn'
+blaster.runBLAST()
+
+# Create list for Blast Rings, iterate over result files in Blaster
+blast_rings = []
+for i in range(len(blaster.results)):
+    blast_ring = BlastRing()
+    blast_ring.setOptions(color=colors[i], name=names[i])
+    blast_ring.min_length = 100
+    blast_ring.min_identity = 70
+    blast_ring.readComparison(file=blaster.results[i])
+    blast_rings.append(ring_blast)
+```
+
+##### BRIG D3
+
+We now have all our components, but we still need to put them together in the right order and pass options to the script that will generate the visualization with D3.
+
+Let's first initialize the Ring Generator, pass an ordered list of our rings and set general options for the script. The required option to set is the length of the reference genome in the parameter *circle*, but we will also set the title and opacity of the rings (for more options see *Basics*):
+
+```
+# Combine rings in desired order and initialize Ring Generator
+rings = [cds_ring] + blast_rings + [misc_ring, cov_ring]
+generator = RingGenerator(rings)
+
+# Set basic options
+generator.setOptions(circle=2860508, title='MRSA ST772', ring_opacity=0.7, project='ST772')
+
+# Write visualization to working directory
+generator.getBrigD3()
+```
+
+You will find the final data file (project.json) and the visualization (project.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
+
 ####Basics
 ---
 Data for the visualization with Java Script is generated with Python. BrigD3 provides different kinds of ring objects and combines them in a ring generator for the final visualization with D3.
 
 All ring types have the following methods of the super-class Ring:
 
-**ring.setOptions(...)**
+*ring.setOptions(...)*
 
 Arguments:
 
@@ -24,15 +122,15 @@ Arguments:
 
 Set basic attributes of the ring object, tooltip accepts customized objects of class Tooltip. See below for more details on Tooltips. Keep at default for now (None).
 
-**ring.writeRing(file)**
+*ring.writeRing(file)*
 
 Write ring data as comma-delimited file (.csv).
 
-**ring.readRing(file)**
+*ring.readRing(file)*
 
 Read raw ring data for brigD3. File without header and columns (in order): Start, End, Color, Height, HTML String for Tooltip.
 
-**ring.clear()**
+*ring.clear()*
 
 Clear all data in ring.
 
@@ -51,11 +149,11 @@ ring.extract = {'gene': 'Gene:'}
 
 The annotation ring has two readers:
 
-**ring.readGenbank(file)**
+*ring.readGenbank(file)*
 
 Parse all given features from a genbank file (.gbk) and extract qualifiers for annotation in brigD3.
 
-**ring.readSNP(file, ...)**
+*ring.readSNP(file, ...)*
 
 Arguments:
 
@@ -75,7 +173,7 @@ ring.below = 'red'
 
 The coverage ring has one reader to parse a bedtools coverage matrix, as derived from SPANDx.
 
-**ring.readCoverage(file, ...)**
+*ring.readCoverage(file, ...)*
 
 Arguments:
 
@@ -98,7 +196,7 @@ ring.min_identity = 70
 
 The BLAST ring has one reader to parse the query output of a genome against the reference DB (-outfmt 6):
 
-**ring.readComparison(file)**
+*ring.readComparison(file)*
 
 Read an output from a BLAST query against the reference DB. Only segments with *min_length* and *min_identity* are used for the visualization.
 
@@ -117,7 +215,7 @@ rings = [ring1, ring2, ring3, ring4...]
 generator = RingGenerator(rings)
 ```
 
-**generator.setOptions(circle, ...)**
+*generator.setOptions(circle, ...)*
 
 Set options for the visualization:
 
@@ -131,7 +229,7 @@ Set options for the visualization:
 * *ring_opacity*: float, final opacity of rings [0.8]
 * *width, height*: int, dimensions of visualization [1700, 1000]
 
-**generator.getBRIG()**
+*generator.getBRIG()*
 
 Write the visualization in working directory as HTML and JSON.
 
@@ -155,7 +253,7 @@ blaster.mode = 'blastn'
 blaster.name_db = 'ReferenceDB'
 ```
 
-**blaster.runBLAST()**
+*blaster.runBLAST()*
 
 Blast query sequences agains reference sequence (DB) with attributes specified for BLAST+. YOu can access the names of the result comparison files (--outfmt 6) by iterating over `blaster.results`.
 
@@ -170,7 +268,7 @@ tooltip.text_color = 'white'
 tooltip.head_colour = '#FBB917'
 ```
 
-###Tutorial
+
 
 
 
