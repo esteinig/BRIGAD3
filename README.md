@@ -12,7 +12,19 @@ BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biome
 
 #####1. Setup Data
 
-For demonstration, we will construct a genome comparison of two Indian sequence types (STs) of methicillin-resistant Staphylococcus aureus (MRSA): ST672 and ST772, including the reference genome DAR4145 of ST772. The rings will be constructed from three different kinds of data: the annotation and sequence files of the reference genome (dar4145.gbk, dar4145.fasta), the sequence files for genomes of ST672 and ST772 (gr1.fasta, 07-17048.fasta, kty21.fasta, 333.fasta, 3957.fasta) and the coverage matrix along a 1kb sliding window from a large alignment of genomes of ST772 against DAR4145 from SPANDx ('bedcov.txt'). You can find the files in the tutorial directory.
+For demonstration, we will construct a simple genome comparison of two Indian sequence types (STs) of methicillin-resistant Staphylococcus aureus (MRSA): ST672 and ST772, including the reference genome DAR4145 of ST772. The rings will be constructed from three different kinds of data: 
+
+The annotation and sequence files of the reference genome (dar4145.gbk, dar4145.fasta) and sequence files for genomes of ST672 and ST772 (gr1.fasta, 07-17048.fasta, kty21.fasta, 333.fasta, 3957.fasta) must be in your working directory:
+
+* [Reference DAR4145](http://www.ncbi.nlm.nih.gov/nuccore/CP010526.1)
+* [GR1](http://www.ncbi.nlm.nih.gov/nuccore/NZ_AJLX00000000)
+* [07-17048](http://www.ncbi.nlm.nih.gov/nuccore/AZBT00000000)
+* [KTY-21](http://www.ncbi.nlm.nih.gov/nuccore/AOCQ00000000)
+* [333](http://www.ncbi.nlm.nih.gov/nuccore/ALWF00000000)
+* [3957](http://www.ncbi.nlm.nih.gov/nuccore/NZ_AOFU00000000)
+
+
+The coverage matrix along a 1kb sliding window comes from a large alignment of genomes of ST772 against DAR4145 using [bedtools](http://bedtools.readthedocs.org/) in [SPANDx](https://github.com/dsarov/SPANDx).
 
 #####2. Rings
 
@@ -32,7 +44,7 @@ misc_ring.setOptions(name='DAR4145', color='#0C090A')
 
 # Set feature and qualifiers to be extracted
 cds_ring.feature = 'CDS'
-cds_ring.extract = {'gene': 'Gene:', 'product' : 'Product:')
+cds_ring.extract = {'gene': 'Gene:', 'product' : 'Product:'}
 misc_ring.feature = 'misc_feature'
 misc_ring.extract = {'note': 'MGE:'}
 
