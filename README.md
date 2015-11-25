@@ -68,7 +68,7 @@ cov_ring.below = 'red'
 cov_ring.readCoverage(file='bedcov.txt', mean=True)
 ```
 
-The final rings we make are the BLASTn comparisons of five genomes (1x ST673, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over the ring generation for Blast Rings:
+The final rings we make are the BLASTn comparisons of five genomes (1x ST672, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over the ring generation for Blast Rings:
 
 ```
 # Setup files, names and colors for BLAST 
@@ -294,7 +294,7 @@ Please consider giving some love to these excellent projects and publications:
 * BLAST Ring Image Generator by [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
 * Mike Bostock's magnificent [D3](https://github.com/mbostock)
 * SPANDx by our colleagues at [Menzies School of Health Research](http://www.menzies.edu.au/) [Sarovich et al. (2014)](http://www.biomedcentral.com/1756-0500/7/618)
-* ST673 and ST772 from India by [Prabhakara et al. (2012)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3393495/), [Monecke et al. (2013)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3878137/),  [Balakuntla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24722327), [Suhaili et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24723714) and our [reference genome for ST772](http://www.biomedcentral.com/1471-2164/16/388)
+* ST672 and ST772 from India by [Prabhakara et al. (2012)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3393495/), [Monecke et al. (2013)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3878137/),  [Balakuntla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24722327), [Suhaili et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24723714) and our [reference genome for ST772](http://www.biomedcentral.com/1471-2164/16/388)
 * [BioPython](http://biopython.org/wiki/Main_Page)
 
 ##Contact
