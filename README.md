@@ -29,7 +29,6 @@ Let's make some rings! The first one is an annotation of the reference genome as
 
 ```
 # Generate annotation rings for CDS and MGEs
-# Import brigD3
 
 from brigD3 import *
 
@@ -55,7 +54,9 @@ Let's make another type of ring that will show the coverage of an alignment of g
 One trick we can use to show only the relevant regions is to set color of the ring to the background (white) and set a threshold value and color. Here, we will color only the segments with average coverage < 95%.
 
 ```
-#Initialize coverage ring and set basic options
+# Generate average coverage ring from alignment of ST772
+
+# Initialize coverage ring and set basic options
 cov_ring = CoverageRing()
 cov_ring.setOptions(name='ST772 Alignment', color='white')
 
@@ -145,7 +146,7 @@ Merge the a list of ring objects with the current ring. This options is powerful
 
 ####Rings
 ---
-Subclasses of ring objects hold and transform the data for the visualization with D3. BrigD3 currently supports three ring types:
+Subclasses of ring objects hold and transform the data for the visualization with D3.
 
 #####AnnotationRing
 
@@ -245,7 +246,7 @@ Set options for the visualization:
 * *title_size*: str, size of title in px or % ['200%']
 * *title_font*: str, font or font family of title ['times']
 * *ring_opacity*: float, final opacity of rings [0.8]
-* *width, height*: int, dimensions of visualization [1700, 1000]
+* *width, height*: int, dimensions of visualization in px [1700, 1000]
 
 *generator.brigD3()*
 
