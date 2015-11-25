@@ -1,5 +1,7 @@
 """Example using some ring features from the Tutorial"""
 
+from brigD3 import *
+
 # CDS ring DAR4145, default setting CDS
 ring_gen = AnnotationRing()
 ring_gen.setOptions(color='#565051', name='DAR4145', height=20)
