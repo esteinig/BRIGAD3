@@ -91,7 +91,7 @@ for i in range(len(blaster.results)):
     blast_ring.min_length = 100
     blast_ring.min_identity = 70
     blast_ring.readComparison(file=blaster.results[i])
-    blast_rings.append(ring_blast)
+    blast_rings.append(blast_ring)
 ```
 
 ##### BRIG D3
