@@ -293,13 +293,14 @@ Please consider giving some love to these excellent projects and publications:
 
 * BLAST Ring Image Generator by [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
 * Mike Bostock's magnificent [D3](https://github.com/mbostock)
-* SPANDx by [Sarovich et al. (2014)](http://www.biomedcentral.com/1756-0500/7/618)
-* [BioPython](http://biopython.org/wiki/Main_Page)
+* SPANDx by our colleagues at [Menzies School of Health Research](http://www.menzies.edu.au/) [Sarovich et al. (2014)](http://www.biomedcentral.com/1756-0500/7/618)
 * ST673 and ST772 from India by [Prabhakara et al. (2012)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3393495/), [Monecke et al. (2013)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3878137/),  [Balakuntla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24722327), [Suhaili et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24723714) and our [reference genome for ST772](http://www.biomedcentral.com/1471-2164/16/388)
+* [BioPython](http://biopython.org/wiki/Main_Page)
 
 ##Contact
 
 eike.steinig@menzies.edu.au
+
 eikejoachim.steinig@my.jcu.edu.au
 
 
