@@ -142,7 +142,7 @@ Read raw ring data for brigD3. File without header and columns (in order): Start
 
 *ring.mergeRings(rings)*
 
-Merge the a list of ring objects with the current ring. This options is powerful, since you can mix any ring type with others, e.g. overlaying SNP annotations on the Blast Rings.
+Merge a list of ring objects with the current ring object. Ring merging can be powerful because you can combine ring types, e.g. overlaying SNP annotations on the Blast Rings.
 
 ####Rings
 ---
