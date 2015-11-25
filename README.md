@@ -12,9 +12,7 @@ BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biome
 
 #####1. Setup Data
 
-For demonstration, we will construct a simple genome comparison of two Indian sequence types (STs) of methicillin-resistant Staphylococcus aureus (MRSA): ST672 and ST772, including the reference genome DAR4145 of ST772. The rings will be constructed from three different kinds of data: 
-
-The annotation and sequence files of the reference genome (dar4145.gbk, dar4145.fasta) and sequence files for genomes of ST672 and ST772 (gr1.fasta, 07-17048.fasta, kty21.fasta, 333.fasta, 3957.fasta) must be in your working directory:
+For demonstration, we will construct a simple genome comparison of two Indian sequence types (STs) of methicillin-resistant Staphylococcus aureus (MRSA): ST672 and ST772, including the reference genome DAR4145 of ST772. The rings will be constructed from different kinds of data and you can set basic option for all ring types via the options method and specific options for the ring type via its attributes. The annotation and sequence files of the reference genome (.gbk, .fasta) and sequence files for genomes of ST672 and ST772 (.fasta) must be in your working directory:
 
 * [Reference DAR4145](http://www.ncbi.nlm.nih.gov/nuccore/CP010526.1)
 * [GR1](http://www.ncbi.nlm.nih.gov/nuccore/NZ_AJLX00000000)
@@ -23,12 +21,11 @@ The annotation and sequence files of the reference genome (dar4145.gbk, dar4145.
 * [333](http://www.ncbi.nlm.nih.gov/nuccore/ALWF00000000)
 * [3957](http://www.ncbi.nlm.nih.gov/nuccore/NZ_AOFU00000000)
 
-
 The coverage matrix along a 1kb sliding window comes from a large alignment of genomes of ST772 against DAR4145 using [bedtools](http://bedtools.readthedocs.org/) in [SPANDx](https://github.com/dsarov/SPANDx).
 
 #####2. Rings
 
-Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations, in this case mobile genetic elements (integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers of popups (values) for each in the final visualization.
+Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations (in this case mobile genetic elements like integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers of popups (values) for each in the final visualization.
 
 ```
 # Generate annotation rings for CDS and MGEs
@@ -70,7 +67,7 @@ cov_ring.below = 'red'
 cov_ring.readCoverage(file='bedcov.txt', mean=True)
 ```
 
-The final rings we make are the BLASTn comparisons of five genomes (1x ST673, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100bp and with BLAST identity > 70%. We must first setup some basic parameters (names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons loop over the ring generation for Blast Rings:
+The final rings we make are the BLASTn comparisons of five genomes (1x ST673, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over the ring generation for Blast Rings:
 
 ```
 # Setup files, names and colors for BLAST 
@@ -99,7 +96,7 @@ for i in range(len(blaster.results)):
 
 ##### BRIG D3
 
-We now have all our components, but we still need to put them together in the right order and pass options to the script that will generate the visualization with D3.
+We now have all our components, but we still need to put them together in the right order and pass options to the script that will generate the visualization with D3. We left out SNP annotations for demonstration, but you can read more about them below (Annotation Rings).
 
 Let's first initialize the Ring Generator, pass an ordered list of our rings and set general options for the script. The required option to set is the length of the reference genome in the parameter *circle*, but we will also set the title and opacity of the rings (for more options see *Basics*):
 
@@ -109,13 +106,13 @@ rings = [cds_ring] + blast_rings + [misc_ring, cov_ring]
 generator = RingGenerator(rings)
 
 # Set basic options
-generator.setOptions(circle=2860508, title='MRSA ST772', ring_opacity=0.7, project='ST772')
+generator.setOptions(circle=2860508, title='Indian MRSA', ring_opacity=0.7, project='ST772')
 
 # Write visualization to working directory
-generator.getBrigD3()
+generator.brigD3()
 ```
 
-You will find the final data file (project.json) and the visualization (project.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
+You will find the final data file (.json) and the visualization (.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
 
 ####Basics
 ---
@@ -142,13 +139,13 @@ Write ring data as comma-delimited file (.csv).
 
 Read raw ring data for brigD3. File without header and columns (in order): Start, End, Color, Height, HTML String for Tooltip.
 
-*ring.clear()*
+*ring.mergeRings(rings)*
 
-Clear all data in ring.
+Merge the a list of ring objects with the current ring. This options is powerful, since you can mix any ring type with others, e.g. overlaying SNP annotations on the Blast Rings.
 
 ####Rings
 ---
-Ring objects hold and transform the data for the visualization with D3. BrigD3 currently supports three ring types:
+Subclasses of ring objects hold and transform the data for the visualization with D3. BrigD3 currently supports three ring types:
 
 #####AnnotationRing
 
@@ -157,6 +154,10 @@ ring = AnnotationRing()
 
 ring.feature = 'CDS'
 ring.extract = {'gene': 'Gene:'}
+ring.snp_length = 100
+ring.intergenic = 'yellow'
+ring.synonymous = 'black'
+ring.non_synonymous = 'red'
 ```
 
 The annotation ring has two readers:
@@ -167,12 +168,14 @@ Parse all given features from a genbank file (.gbk) and extract qualifiers for a
 
 *ring.readSNP(file, ...)*
 
-Arguments:
+* *single*: bool, read a single isolate only [False]
+* *n*: int, column number for single isolate [5]
+ 
+Read a file ('.csv') without header containing the columns (in order): SNP ID, Type, Location on Reference Genome, Notes. The fifth column contains the nucleotides for the reference genome, each following column the nucleotide at this location for each of the aligned genomes. Notes should be single string, location an integer, type one of *synonymous*, *non-synonymous* or *intergenic* (all others get base color) and the SNP ID. 
 
-* *length*: int, length of segment showing the SNP [100]
+If single is True, the reader parses only the isolate in the *n*-th column, which should be > 4 (as reference nucleotides are stored in 4, counting pythonically from 0). The SNPs will only be parsed if they are different to the reference nucleotide.
 
-Read a file ('.csv') without header containing the columns (in order): SNP ID, Location on Reference Genome, Notes.
-Length specifies the length of the segment showing the SNP. Allows for better visibility in large genome sequences.
+Length specifies the length of the segment showing the SNP. The SNP is in center position of the segment, allows for better visibility in large genome sequences.
 
 #####CoverageRing
 
@@ -191,13 +194,16 @@ Arguments:
 
 * *sep*: str, delimiter ['\t']
 * *mean*: bool, calculate mean coverage across all samples [True]
-* *n*: int, number of column containing target sample when mean is False (starting with 0) [4]
+* *n*: int, number of column containing target sample when mean is False [4]
 
 Read a coverage matrix file with header containing the columns (in order): ID, Start, End, Sample1, Sample2 ...
-Matrix contains an entry for each segment with start and end position and one value between 0 and 1 for each Sample (M x N).
-The default reader calculates the average coverage across all samples for each segment, but you can also specify the column number *n* to parse coverage for only a single genome. Coverage below the threshold is coloured according to set threshold colour, so you can set normal colour to background (white) showing only below threshold coverage along the reference genome.
 
-#####BlastRing()
+Matrix contains an entry for each segment with start and end position and one value between 0 and 1 for each Sample (M x N).
+The default reader calculates the average coverage across all samples for each segment, but you can also specify the column number *n* (starting from 0) to parse coverage for only a single genome. 
+
+Coverage below the threshold is coloured according to set threshold colour, so you can set normal colour to background (white) showing only below threshold coverage along the reference genome.
+
+#####BlastRing
 
 ```
 ring = BlastRing()
@@ -241,18 +247,18 @@ Set options for the visualization:
 * *ring_opacity*: float, final opacity of rings [0.8]
 * *width, height*: int, dimensions of visualization [1700, 1000]
 
-*generator.getBRIG()*
+*generator.brigD3()*
 
 Write the visualization in working directory as HTML and JSON.
 
-####BLASTer
+####Blaster
 ---
 
-System calls to run BLAST+ (in $PATH).
+System calls to run BLAST+ in $PATH.
 
 #####Blast
 
-Initialize a blaster with reference sequence (.fasta) and a list of comparison sequences (.fasta), convenience module for integrating BLAST+ and generating multiple BlastRings (see Tutorial).
+Initialize a blaster with reference sequence (.fasta) and a list of comparison sequences (.fasta), convenience module for integrating BLAST+ and generating multiple Blast Rings (see Tutorial).
 
 ```
 reference = 'reference.fasta'
@@ -267,7 +273,7 @@ blaster.name_db = 'ReferenceDB'
 
 *blaster.runBLAST()*
 
-Blast query sequences agains reference sequence (DB) with attributes specified for BLAST+. YOu can access the names of the result comparison files (--outfmt 6) by iterating over `blaster.results`.
+Blast query sequences agains reference sequence (DB) with attributes specified for BLAST+. You can access the names of the result comparison files (--outfmt 6) by iterating over `blaster.results`.
 
 ####Tooltips
 ---
@@ -280,8 +286,20 @@ tooltip.text_color = 'white'
 tooltip.head_colour = '#FBB917'
 ```
 
+##References
 
+Please consider giving some love to these excellent projects and publications:
 
+* BLAST Ring Image Generator by [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
+* Mike Bostock's magnificent [D3](https://github.com/mbostock)
+* SPANDx by [Sarovich et al. (2014)](http://www.biomedcentral.com/1756-0500/7/618)
+* [BioPython](http://biopython.org/wiki/Main_Page)
+* ST673 and ST772 from India by [Prabhakara et al. (2012)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3393495/), [Monecke et al. (2013)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3878137/),  [Balakuntla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24722327), [Suhaili et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24723714) and our [reference genome for ST772](http://www.biomedcentral.com/1471-2164/16/388)
+
+##Contact
+
+eike.steinig@menzies.edu.au
+eikejoachim.steinig@my.jcu.edu.au
 
 
 
