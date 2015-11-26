@@ -4,12 +4,12 @@ Interactive visualization of prokaryotic sequence annotations, comparisons and s
 
 BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
 
-##Dependencies
+###Dependencies
 ---
 * Python 3.4
 * BioPython
 
-##Tutorial
+###Tutorial
 ---
 
 #####1. Setup Data
@@ -117,8 +117,9 @@ generator.brigD3()
 
 You will find the final data file (.json) and the visualization (.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
 
-##Basics
+###Basics
 ---
+
 Data for the visualization with Java Script is generated with Python. BrigD3 provides different kinds of ring objects and combines them in a ring generator for the final visualization with D3.
 
 All ring types have the following methods of the super-class Ring:
@@ -289,7 +290,8 @@ tooltip.text_color = 'white'
 tooltip.head_colour = '#FBB917'
 ```
 
-##References
+###References
+---
 
 Please consider giving some love to these excellent projects and publications:
 
@@ -299,7 +301,8 @@ Please consider giving some love to these excellent projects and publications:
 * ST672 and ST772 from India by [Prabhakara et al. (2012)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3393495/), [Monecke et al. (2013)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3878137/),  [Balakuntla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24722327), [Suhaili et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24723714) and our [reference genome for ST772](http://www.biomedcentral.com/1471-2164/16/388)
 * [BioPython](http://biopython.org/wiki/Main_Page)
 
-##Contact
+###Contact
+---
 
 eike.steinig@menzies.edu.au
 
