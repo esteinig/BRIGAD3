@@ -1,13 +1,15 @@
-# brigD3
+#brigD3
+
+Interactive visualization of prokaryotic sequence annotations, comparisons and statistics with D3.
 
 BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
 
-### Dependencies
+##Dependencies
 ---
 * Python 3.4
 * BioPython
 
-###Tutorial
+##Tutorial
 ---
 
 #####1. Setup Data
@@ -25,7 +27,7 @@ The coverage matrix along a 1kb sliding window comes from a large alignment of g
 
 #####2. Rings
 
-Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations (in this case mobile genetic elements like integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers of popups (values) for each in the final visualization.
+Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations (in this case mobile genetic elements like integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers for the popups (values) in the final visualization.
 
 ```
 # Generate annotation rings for CDS and MGEs
@@ -68,7 +70,7 @@ cov_ring.below = 'red'
 cov_ring.readCoverage(file='bedcov.txt', mean=True)
 ```
 
-The final rings we make are the BLASTn comparisons of five genomes (1x ST672, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over the ring generation for Blast Rings:
+The final rings we make are the BLASTn comparisons of five genomes (1x ST672, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over theoir indices and generate the Blast Rings:
 
 ```
 # Setup files, names and colors for BLAST 
@@ -99,7 +101,7 @@ for i in range(len(blaster.results)):
 
 We now have all our components, but we still need to put them together in the right order and pass options to the script that will generate the visualization with D3. We left out SNP annotations for demonstration, but you can read more about them below (Annotation Rings).
 
-Let's first initialize the Ring Generator, pass an ordered list of our rings and set general options for the script. The required option to set is the length of the reference genome in the parameter *circle*, but we will also set the title and opacity of the rings (for more options see *Basics*):
+Let's first initialize the Ring Generator, pass an ordered list of our rings and set general options for the script. The required option to set is the length of the reference genome in the parameter **circle**, but we will also set the title and opacity of the rings (for more options see *Basics*):
 
 ```
 # Combine rings in desired order and initialize Ring Generator
@@ -115,7 +117,7 @@ generator.brigD3()
 
 You will find the final data file (.json) and the visualization (.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
 
-####Basics
+##Basics
 ---
 Data for the visualization with Java Script is generated with Python. BrigD3 provides different kinds of ring objects and combines them in a ring generator for the final visualization with D3.
 
