@@ -148,7 +148,7 @@ Read raw ring data for brigD3. File without header and columns (in order): Start
 Merge a list of ring objects with the current ring object. Ring merging can be powerful because you can combine ring types, e.g. overlaying SNP annotations on the Blast Rings.
 
 ####Rings
----
+
 Subclasses of ring objects hold and transform the data for the visualization with D3.
 
 #####AnnotationRing
@@ -223,7 +223,6 @@ The BLAST ring has one reader to parse the query output of a genome against the 
 Read an output from a BLAST query against the reference DB. Only segments with *min_length* and *min_identity* are used for the visualization.
 
 ####BLAST Ring Image Generator
----
 
 The ring generator combines a list of rings and writes the final visualization as HTML and JSON.
 
@@ -256,7 +255,6 @@ Set options for the visualization:
 Write the visualization in working directory as HTML and JSON.
 
 ####Blaster
----
 
 System calls to run BLAST+ in $PATH.
 
@@ -280,7 +278,6 @@ blaster.name_db = 'ReferenceDB'
 Blast query sequences agains reference sequence (DB) with attributes specified for BLAST+. You can access the names of the result comparison files (--outfmt 6) by iterating over `blaster.results`.
 
 ####Tooltips
----
 
 Initiate a tooltip object to pass to ring attributes (ring.setOptions) for attaching popups to segments in the visualization (still under construction...)
 
