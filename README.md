@@ -4,7 +4,9 @@
 
 Interactive visualization of prokaryotic sequence annotations, comparisons and statistics with D3.
 
-The cover image is static, please see the link for the visualization of [Indian MRSA Sequence Types](https://rawgit.com/esteinig/brigD3/master/examples/cover.html). I am trying to fix an issue with the transform and zoom integration in D3. It does some funky things in Chrome and Internet Explorer, but it works in Firefox.
+The cover image is static, please see the link for the visualization of [Indian MRSA Sequence Types](https://rawgit.com/esteinig/brigD3/master/examples/cover.html). 
+
+I am having some trouble with the transform and zoom integration in D3. It does some funky things in Chrome and Internet Explorer, but it works in Firefox. 
 
 BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402).
 
@@ -119,7 +121,7 @@ generator.setOptions(circle=2860508, title='Indian MRSA', ring_opacity=0.7, proj
 generator.brigD3()
 ```
 
-You will find the final data file (.json) and the visualization (.html) in your working directory, you can open the HTML file in your favourite browser, like Firefox or Chrome. For security reasons, Chrome has trouble loading files from disk. I will update this section with a couple of ways around it, but it generally works smoothly in Firefox.
+You will find the final visualization (.html) in your working directory and you can open it directly in your browser. I am having some trouble integrating the transform and zoom function for Chrome or Internet Explorer, but they work smoothly in Firefox.
 
 ###Basics
 ---
