@@ -25,41 +25,6 @@ import statistics
 from subprocess import call
 from Bio import SeqIO
 
-def test():
-
-    # CDS ring DAR4145, default setting CDS
-    ring_gen = AnnotationRing()
-    ring_gen.setOptions(color='#565051', name='DAR4145', height=20)
-    ring_gen.readGenbank('annotation.gbk')
-
-    # Misc Feature ring DAR4145
-    ring_misc = AnnotationRing()
-    ring_misc.setOptions(color='#0C090A', name='DAR4145', height=20)
-    ring_misc.feature = 'misc_feature'
-    ring_misc.extract = {'note': 'Note: '}
-    ring_misc.readGenbank('annotation.gbk')
-
-    # Blast Rings, Genbank genomes ST673 and ST772
-    genomes = ['GR1.fasta','SA_07-17048.fasta', 'SA_KTY21.fasta', 'SA_333.fasta', 'SA_3957.fasta']
-    colors = ['#FBB917','#0000A0', '#2B60DE', '#1589FF', '#5CB3FF']
-    names = ['ST672 GR1', 'ST772 07-17048', 'ST772 KTY-21', 'ST772 333', 'ST772 3957']
-    blaster = Blaster('ref.fasta', genomes=genomes)
-    blaster.runBLAST()
-
-    blast_rings = []
-    for i in range(len(blaster.results)):
-        ring_blast = BlastRing()
-        ring_blast.setOptions(color=colors[i], name=names[i])
-        ring_blast.min_length = 100
-        ring_blast.readComparison(blaster.results[i])
-        blast_rings.append(ring_blast)
-
-    rings = [ring_gen] + blast_rings + [ring_misc]
-
-    generator = RingGenerator(rings)
-    generator.setOptions(circle=2860508, project='example2', title='DAR4145', title_size='200%', radius=200)
-    generator.brigD3()
-
 ### Ring Generator ###
 
 class RingGenerator:
@@ -669,6 +634,4 @@ class Visualization:
         with open(project + '.html', 'a') as outfile:
             json.dump(self.data, outfile, indent=4, sort_keys=True)
             outfile.write(self.body)
-
-test()
 
