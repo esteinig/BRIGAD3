@@ -1,6 +1,10 @@
 #brigD3
 
+![](https://github.com/esteinig/brigD3/blob/master/examples/cover.png)
+
 Interactive visualization of prokaryotic sequence annotations, comparisons and statistics with D3.
+
+The cover image is static, please see the link for the interactive cover visualization of [Indian MRSA Sequence Types against the reference genome DAR4145 with Coverage- , SNP- and BLAST-Rings](https://rawgit.com/esteinig/brigD3/master/examples/cover.html)
 
 BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402)
 
