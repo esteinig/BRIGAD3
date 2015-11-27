@@ -4,7 +4,7 @@
 
 Interactive visualization of prokaryotic sequence annotations, comparisons and statistics with D3.
 
-The cover image is static, please see the link for the visualization of [Indian MRSA Sequence Types against the reference genome DAR4145 with Coverage- , SNP- and BLAST-Rings](https://rawgit.com/esteinig/brigD3/master/examples/cover.html).
+The cover image is static, please see the link for the visualization of [Indian MRSA Sequence Types](https://rawgit.com/esteinig/brigD3/master/examples/cover.html). I am trying to fix an issue with the transform and zoom integration in D3. It does some funky things in Chrome and Internet Explorer, but it works in Firefox.
 
 BLAST Ring Image Generator adopted from [Alikhan et al. (2012)](http://www.biomedcentral.com/1471-2164/12/402).
 
