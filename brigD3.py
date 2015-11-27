@@ -1,3 +1,5 @@
+__author__ = 'esteinig'
+
 """
 
 brigD3
@@ -11,7 +13,6 @@ Manual for brigD3 at https://github.com/esteinig/brigD3
 Eike J. Steinig
 Tong Lab, Menzies School of Health Research
 Zenger Lab, James Cook University
-
 eike.steinig@menzies.edu.au, eikejoachim.steinig@my.jcu.edu.au
 
 """
@@ -24,6 +25,41 @@ import statistics
 from subprocess import call
 from Bio import SeqIO
 
+def test():
+
+    # CDS ring DAR4145, default setting CDS
+    ring_gen = AnnotationRing()
+    ring_gen.setOptions(color='#565051', name='DAR4145', height=20)
+    ring_gen.readGenbank('annotation.gbk')
+
+    # Misc Feature ring DAR4145
+    ring_misc = AnnotationRing()
+    ring_misc.setOptions(color='#0C090A', name='DAR4145', height=20)
+    ring_misc.feature = 'misc_feature'
+    ring_misc.extract = {'note': 'Note: '}
+    ring_misc.readGenbank('annotation.gbk')
+
+    # Blast Rings, Genbank genomes ST673 and ST772
+    genomes = ['GR1.fasta','SA_07-17048.fasta', 'SA_KTY21.fasta', 'SA_333.fasta', 'SA_3957.fasta']
+    colors = ['#FBB917','#0000A0', '#2B60DE', '#1589FF', '#5CB3FF']
+    names = ['ST672 GR1', 'ST772 07-17048', 'ST772 KTY-21', 'ST772 333', 'ST772 3957']
+    blaster = Blaster('ref.fasta', genomes=genomes)
+    blaster.runBLAST()
+
+    blast_rings = []
+    for i in range(len(blaster.results)):
+        ring_blast = BlastRing()
+        ring_blast.setOptions(color=colors[i], name=names[i])
+        ring_blast.min_length = 100
+        ring_blast.readComparison(blaster.results[i])
+        blast_rings.append(ring_blast)
+
+    rings = [ring_gen] + blast_rings + [ring_misc]
+
+    generator = RingGenerator(rings)
+    generator.setOptions(circle=2860508, project='example2', title='DAR4145', title_size='200%', radius=200)
+    generator.brigD3()
+
 ### Ring Generator ###
 
 class RingGenerator:
@@ -31,7 +67,7 @@ class RingGenerator:
     """
 
     Class: Ring Generator
-    
+
     Initiate with list of rings and set options for visualization. The generator transforms the ring data into
     a list of dictionaries for writing as JSON. Options can be set via setOptions. The main access is the brigD3 method,
     which initiates the helper class Visualization containing the JS D3 script and sets its parameters in the string.
@@ -81,7 +117,7 @@ class RingGenerator:
 
         return self.data
 
-    def setOptions(self, circle, radius=300, gap=5, project='data', title='brigD3', title_size='300%', title_font='times',
+    def setOptions(self, circle, radius=300, gap=5, project= 'data', title='brigD3', title_size='300%', title_font='times',
                    ring_opacity=0.8, width=1700, height=1000):
 
         """Set options for circle generator and visualization with D3."""
@@ -89,7 +125,7 @@ class RingGenerator:
         self.radius = radius
         self.gap = gap
         self.project = project
-        self._options = {'circle': circle, 'main_data': project, 'main_title': title, 'title_size': title_size,
+        self._options = {'circle': circle, 'main_title': title, 'title_size': title_size,
                         'title_font': title_font, 'ring_opacity': ring_opacity, 'chart_width': width,
                         'chart_height': height}
 
@@ -98,15 +134,10 @@ class RingGenerator:
         """Write files for brigD3 to working directory."""
 
         print('\nWriting visualization to working directory ...\n')
-        self._writeJSON()
-        viz = Visualization(self._options)
+        viz = Visualization(self._options, self.data)
         viz._setScript()
         viz._writeHTML(self.project)
 
-    def _writeJSON(self):
-
-        with open(self.project + '.json', 'w') as outfile:
-            json.dump(self.data, outfile)
 
 
 ### Rings ###
@@ -128,8 +159,8 @@ class Ring:
     rings' data (list of ring objects) to the current ring object. Attributes of the ring object which called the
     method are retained.
 
-    Subclasses of the ring object have additional attributes pertaining to their function and different readers for
-    data files.
+    Subclasses of the ring object have additional attributes pertaining to their function, as well as different readers
+    for data files.
 
     Attributes:
 
@@ -454,7 +485,7 @@ class Tooltip:
 class Blaster:
 
     """
-    
+
     Class: Blaster
 
     Convenience module to run BLAST+ (needs to be in $PATH).
@@ -510,13 +541,14 @@ class Blaster:
 class Visualization:
 
     """Helper class Visualization, holds script for JS D3. Methods to write replace options from Ring Generator in
-    script and write the HTML. Initialize with options dict from Ring Generator. """
+    script and write the HTML. Initialize with options dict and data from Ring Generator. """
 
-    def __init__(self, options):
+    def __init__(self, options, data):
 
         self.options = options
+        self.data = data
 
-        self.html = '''
+        self.head = '''
                     <!DOCTYPE html>
                     <meta charset="utf-8">
                     <style>
@@ -537,98 +569,106 @@ class Visualization:
                     <body>
                     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
                     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+                    <script type="application/json" id="data">
+                    '''
+
+        self.body = '''
+                    </script>
                     <script>
 
                     pi = Math.PI;
-                    genomeLength = circle
+                    seqLength = circle
 
                     var degreeScale = d3.scale.linear()
-                                          .domain([0, genomeLength])
+                                          .domain([0, seqLength])
                                           .range([0,360])
                     ;
 
-                    var data = d3.json("main_data.json", function(data) {
+                    var data = JSON.parse(document.getElementById('data').innerHTML);
 
-                        var arc = d3.svg.arc()
-                            .innerRadius(function(d, i){return d.inner;})
-                            .outerRadius(function(d, i){return d.outer;})
-                            .startAngle(function(d, i){return degreeScale(d.start) * (pi/180);})
-                            .endAngle(function(d, i){return degreeScale(d.end) * (pi/180);})
-                        ;
+                    var arc = d3.svg.arc()
+                        .innerRadius(function(d, i){return d.inner;})
+                        .outerRadius(function(d, i){return d.outer;})
+                        .startAngle(function(d, i){return degreeScale(d.start) * (pi/180);})
+                        .endAngle(function(d, i){return degreeScale(d.end) * (pi/180);})
+                    ;
 
-                        var width = chart_width
-                        var height = chart_height
+                    var width = chart_width
+                    var height = chart_height
 
-                        var chart = d3.select("body").append("svg:svg")
-                            .attr("width", width)
-                            .attr("height", height)
-                            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-                            .call(d3.behavior.zoom().on("zoom", function () {
-                                    chart.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-                                    }))
-                            .append("svg:g")
-                        ;
+                    var chart = d3.select("body").append("svg:svg")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+                        .call(d3.behavior.zoom().on("zoom", function () {
+                                chart.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                                }))
+                        .append("svg:g")
+                    ;
 
-                        var div = d3.select("body").append("div")
-                            .attr("class", "tooltip")
-                            .style("opacity", 0)
-                        ;
+                    var div = d3.select("body").append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0)
+                    ;
 
-                        chart.selectAll("path")
-                            .data(data)
-                            .enter().append("svg:path")
-                            .style("fill", function(d, i){ return d.color; })
-                            .style("opacity", 0)
-                            .attr("d", arc)
-                            .on('mouseover', function(d) {
-                                    div.transition()
-                                        .duration(200)
-                                        .style("opacity", .9);
-                                    div .html(d.text)
-                                        .style("left", (d3.event.pageX + 20) + "px")
-                                        .style("top", (d3.event.pageY + 10) + "px");
-                                    })
-                            .on('mouseout', function(d) {
-                                    div.transition()
-                                        .duration(200)
-                                        .style("opacity", 0)
+                    chart.selectAll("path")
+                        .data(data)
+                        .enter().append("svg:path")
+                        .style("fill", function(d, i){ return d.color; })
+                        .style("opacity", 0)
+                        .attr("d", arc)
+                        .on('mouseover', function(d) {
+                                div.transition()
+                                    .duration(200)
+                                    .style("opacity", .9);
+                                div .html(d.text)
+                                    .style("left", (d3.event.pageX + 20) + "px")
+                                    .style("top", (d3.event.pageY + 10) + "px");
                                 })
-                        ;
+                        .on('mouseout', function(d) {
+                                div.transition()
+                                    .duration(200)
+                                    .style("opacity", 0)
+                            })
+                    ;
 
-                        chart.append("text")
-                          .style("opacity", 0)
-                          .style("text-anchor", "middle")
-                          .style("font-size", "title_size")
-                          .style("font-weight", "bold")
-                          .style("font-family", "title_font")
-                          .attr("class", "inside")
-                          .text(function(d) { return 'main_title'; })
-                          .transition().duration(2000).style("opacity", 1);
+                    chart.append("text")
+                      .style("opacity", 0)
+                      .style("text-anchor", "middle")
+                      .style("font-size", "title_size")
+                      .style("font-weight", "bold")
+                      .style("font-family", "title_font")
+                      .attr("class", "inside")
+                      .text(function(d) { return 'main_title'; })
+                      .transition().duration(2000).style("opacity", 1);
 
-                        chart.selectAll("path")
-                            .transition().delay(2000).duration(5000)
-                            .style("opacity", ring_opacity)
-                        ;
+                    chart.selectAll("path")
+                        .transition().delay(2000).duration(5000)
+                        .style("opacity", ring_opacity)
+                    ;
 
-                    });
+                </script>
+                </body>
 
-
-                    </script>
-                    </body>
-
-                    '''
+                '''
 
     def _setScript(self):
 
         """Replace placeholder values in script with given options."""
 
         for placeholder, value in self.options.items():
-            self.html = self.html.replace(str(placeholder), str(value))
+            self.body = self.body.replace(str(placeholder), str(value))
 
     def _writeHTML(self, project):
 
         """Write script to HTML."""
 
         with open(project + '.html', 'w') as outfile:
-            outfile.write(self.html)
+            outfile.write(self.head)
+
+        with open(project + '.html', 'a') as outfile:
+            json.dump(self.data, outfile, indent=4, sort_keys=True)
+            outfile.write(self.body)
+
+test()
 
