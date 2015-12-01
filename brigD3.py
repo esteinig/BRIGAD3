@@ -563,7 +563,6 @@ class Visualization:
                     var chart = d3.select("body").append("svg:svg")
                         .attr("width", width)
                         .attr("height", height)
-                        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
                         .call(d3.behavior.zoom().on("zoom", function () {
                                 chart.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
                                 }))
@@ -575,12 +574,19 @@ class Visualization:
                         .style("opacity", 0)
                     ;
 
-                    chart.selectAll("path")
+                    var ringShell = chart.append("g")
+                                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                    var textShell = chart.append("g")
+                                         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+                    ringShell.selectAll("path")
                         .data(data)
                         .enter().append("svg:path")
                         .style("fill", function(d, i){ return d.color; })
-                        .style("opacity", 0)
+                        .style("opacity", ring_opacity)
                         .attr("d", arc)
+                        .attr('pointer-events', 'none')
                         .on('mouseover', function(d) {
                                 div.transition()
                                     .duration(200)
@@ -594,9 +600,10 @@ class Visualization:
                                     .duration(200)
                                     .style("opacity", 0)
                             })
+                        .attr('pointer-events', 'visible')
                     ;
 
-                    chart.append("text")
+                    textShell.append("text")
                       .style("opacity", 0)
                       .style("text-anchor", "middle")
                       .style("font-size", "title_size")
@@ -604,11 +611,7 @@ class Visualization:
                       .style("font-family", "title_font")
                       .attr("class", "inside")
                       .text(function(d) { return 'main_title'; })
-                      .transition().duration(2000).style("opacity", 1);
-
-                    chart.selectAll("path")
-                        .transition().delay(2000).duration(5000)
-                        .style("opacity", ring_opacity)
+                      .transition().duration(5000).style("opacity", 1);
                     ;
 
                 </script>
