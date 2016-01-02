@@ -33,7 +33,7 @@ The coverage matrix along a 1kb sliding window comes from a large alignment of g
 
 Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations (in this case mobile genetic elements like integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers for the popups (values) in the final visualization.
 
-```
+```p
 # Generate annotation rings for CDS and MGEs
 
 from brigD3 import *
@@ -59,7 +59,7 @@ Let's make another type of ring that will show the coverage of an alignment of g
 
 One trick we can use to show only the relevant regions is to set color of the ring to the background (white) and set a threshold value and color. Here, we will color only the segments with average coverage < 95%.
 
-```
+```p
 # Generate average coverage ring from alignment of ST772
 
 # Initialize coverage ring and set basic options
@@ -76,7 +76,7 @@ cov_ring.readCoverage(file='bedcov.txt', mean=True)
 
 The final rings we make are the BLASTn comparisons of five genomes (1x ST672, 4x ST772) against the reference DB of DAR4145. By default, we will include only segments > 100 base pairs and with BLAST identity > 70%. We must first setup some basic parameters (files, names, colors), then initiate the Blaster and finally use the returned filenames of the comparisons to iterate over theoir indices and generate the Blast Rings:
 
-```
+```p
 # Setup files, names and colors for BLAST 
 reference = 'dar4145.fasta'
 genomes = ['gr1.fasta', '07-17048.fasta', 'kty21.fasta', '333.fasta', '3957.fasta']
@@ -107,7 +107,7 @@ We now have all our components, but we still need to put them together in the ri
 
 Let's first initialize the Ring Generator, pass an ordered list of our rings and set general options for the script. The required option to set is the length of the reference genome in the parameter **circle**, but we will also set the title and opacity of the rings (for more options see *Basics*):
 
-```
+```p
 # Combine rings in desired order and initialize Ring Generator
 rings = [cds_ring] + blast_rings + [misc_ring, cov_ring]
 generator = RingGenerator(rings)
@@ -157,7 +157,7 @@ Subclasses of ring objects hold and transform the data for the visualization wit
 
 #####AnnotationRing
 
-```
+```p
 ring = AnnotationRing()
 
 ring.feature = 'CDS'
@@ -187,7 +187,7 @@ Length specifies the length of the segment showing the SNP. The SNP is in center
 
 #####CoverageRing
 
-```
+```p
 ring = CoverageRing()
 
 ring.threshold = 0.95
@@ -213,7 +213,7 @@ Coverage below the threshold is coloured according to set threshold colour, so y
 
 #####BlastRing
 
-```
+```p
 ring = BlastRing()
 
 ring.min_length = 100
@@ -234,7 +234,7 @@ The ring generator combines a list of rings and writes the final visualization a
 
 The generator accepts a list of ring objects (from inner to outer) and you can set options for the visualization with D3.
 
-```
+```p
 rings = [ring1, ring2, ring3, ring4...]
 
 generator = RingGenerator(rings)
@@ -266,7 +266,7 @@ System calls to run BLAST+ in $PATH.
 
 Initialize a blaster with reference sequence (.fasta) and a list of comparison sequences (.fasta), convenience module for integrating BLAST+ and generating multiple Blast Rings (see Tutorial).
 
-```
+```p
 reference = 'reference.fasta'
 genomes = ['genome1.fasta', 'genome2.fasta', ...]
 
@@ -285,7 +285,7 @@ Blast query sequences agains reference sequence (DB) with attributes specified f
 
 Initiate a tooltip object to pass to ring attributes (ring.setOptions) for attaching popups to segments in the visualization (still under construction...)
 
-```
+```p
 tooltip = Tooltip()
 tooltip.text_color = 'white'
 tooltip.head_colour = '#FBB917'
