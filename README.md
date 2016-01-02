@@ -34,23 +34,23 @@ The coverage matrix along a 1kb sliding window comes from a large alignment of g
 Let's make some rings! The first one is an annotation of the reference genome as base of the visualization. We will make one ring extracting gene names and products from CDS features, and a second ring getting miscellaneous feature annotations (in this case mobile genetic elements like integrated viruses, plasmids or gene cassettes). The extraction dictionary we pass to the extract attribute contains the qualifiers to extract (keys) and the headers for the popups (values) in the final visualization.
 
 ```p
-# Generate annotation rings for CDS and MGEs
+#Generate annotation rings for CDS and MGEs
 
 from brigD3 import *
 
-# Initialize annotation ring and set basic attributes
+#Initialize annotation ring and set basic attributes
 cds_ring = AnnotationRing()
 cds_ring.setOptions(name='DAR4145', color='black')
 misc_ring = AnnotationRing()
 misc_ring.setOptions(name='DAR4145', color='#0C090A')
 
-# Set feature and qualifiers to be extracted
+#Set feature and qualifiers to be extracted
 cds_ring.feature = 'CDS'
 cds_ring.extract = {'gene': 'Gene:', 'product' : 'Product:'}
 misc_ring.feature = 'misc_feature'
 misc_ring.extract = {'note': 'MGE:'}
 
-# Parse annotation files
+#Parse annotation files
 cds_ring.readGenbank(file='dar4145.gbk')
 misc_ring.readGenbank(file='dar4145.gbk')
 ```
