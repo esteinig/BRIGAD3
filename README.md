@@ -6,19 +6,19 @@
 
 ## Overview
 
-`BRIGAD3` is a Python API and Vue application wrapping a `D3.js` arch generator to generate an interactive visualiation of bacterial genome assemblies and contig annotations. It connects to the `np-core/np-assembly` and `np-core/np-type` pipelines for genome batch assembly and pathogen typing of nanopore sequence reads from completed and live sequence runs.
+`BRIGAD3` is a Python API and Vue application wrapping a `D3.js` arch visualization to generate interactive images of bacterial genome assemblies, chromosomes and genome annotations. It connects to the `np-core/np-assembly` and `np-core/np-type` pipelines for genome batch assembly and pathogen typing of nanopore sequence reads from completed and live sequence runs.
 
 Pre-print available on BioRxiv.
 
 ### Docs
 ---
 
-[brigad3.readthedocs.io](https://sccion.readthedocs.io/)
+[brigad3.readthedocs.io](https://brigad3.readthedocs.io/)
 
 ### Install
 ---
 
-`conda install -c conda-forge -c bioconda -c esteinig sccion`
+`conda install -c conda-forge -c bioconda -c esteinig brigad3`
 
 ### Usage
 ---
