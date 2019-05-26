@@ -6,7 +6,7 @@
 
 ## Overview
 
-`BRIGAD3` is a Python API and Vue application wrapping a `D3.js` arch visualization to generate interactive images of bacterial genome assemblies, chromosomes and genome annotations. It connects to the `np-core/np-assembly` and `np-core/np-type` pipelines for genome batch assembly and pathogen typing of nanopore sequence reads from completed and live sequence runs.
+`BRIGAD3` is a Python API and Vue application wrapping a `D3.js` arch visualization to generate interactive images of bacterial genome assemblies and annotations. It connects to `np-core/np-assembly` and `np-core/np-type` pipelines for state-of-the-art genome assembly and pathogen typing of nanopore sequence reads from completed and online sequence runs.
 
 Pre-print available on BioRxiv.
 
